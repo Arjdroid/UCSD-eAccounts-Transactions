@@ -11,10 +11,26 @@ def extract_table(file_path):
 
     # Find the table with the specific class and ID
     table = soup.find('table', {'class': 'rgMasterTable RadGrid_BorderOverride', 'id': 'ctl00_MainContent_ResultRadGrid_ctl00'})
-    
-    # If the table is found, print its contents
+
+    # If the table is found, process its contents
     if table:
-        print(table.prettify())
+        # Clear the attributes of the table itself
+        table.attrs = {}
+
+        # Remove unwanted attributes from the table's children
+        for tag in table.find_all(True):  # Find all tags inside the table
+            tag.attrs = {}  # Clear all attributes for each tag
+
+        # Only keep the essential table structure (table, thead, tbody, tr, th, td)
+        # Remove unwanted tags like 'tfoot', 'colgroup', 'caption', 'span', and 'div'
+        for unwanted_tag in table(['tfoot', 'colgroup', 'caption', 'thead table', 'span', 'div']):
+            unwanted_tag.decompose()
+
+        # Convert the simplified table back to HTML string
+        simplified_table = str(table)
+
+        # Print the simplified table
+        print(simplified_table)
     else:
         print("Table not found.")
 
